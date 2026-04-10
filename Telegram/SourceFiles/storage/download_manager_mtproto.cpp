@@ -23,10 +23,10 @@ constexpr auto kKillSessionTimeout = 15 * crl::time(1000);
 constexpr auto kStartWaitedInSession = 4 * kDownloadPartSize;
 constexpr auto kMaxWaitedInSession = 16 * kDownloadPartSize;
 constexpr auto kStartSessionsCount = 1;
-constexpr auto kMaxSessionsCount = 8;
+constexpr auto kMaxSessionsCount = 16;
 constexpr auto kMaxTrackedSessionRemoves = 64;
-constexpr auto kRetryAddSessionTimeout = 8 * crl::time(1000);
-constexpr auto kRetryAddSessionSuccesses = 3;
+constexpr auto kRetryAddSessionTimeout = 1 * crl::time(1000);
+constexpr auto kRetryAddSessionSuccesses = 1;
 constexpr auto kMaxTrackedSuccesses = kRetryAddSessionSuccesses
 	* kMaxTrackedSessionRemoves;
 constexpr auto kRemoveSessionAfterTimeouts = 4;
@@ -110,11 +110,11 @@ void DownloadManagerMtproto::Queue::removeSession(int index) {
 }
 
 DownloadManagerMtproto::DcSessionBalanceData::DcSessionBalanceData()
-: maxWaitedAmount(kStartWaitedInSession) {
+: maxWaitedAmount(kStartWaitedInSession * 2) {
 }
 
 DownloadManagerMtproto::DcBalanceData::DcBalanceData()
-: sessions(kStartSessionsCount) {
+: sessions(2) {
 }
 
 DownloadManagerMtproto::DownloadManagerMtproto(not_null<ApiWrap*> api)
@@ -262,7 +262,7 @@ void DownloadManagerMtproto::requestSucceeded(
 	if (amountAtRequestStart == data.maxWaitedAmount
 		&& data.maxWaitedAmount < kMaxWaitedInSession) {
 		data.maxWaitedAmount = std::min(
-			data.maxWaitedAmount + kDownloadPartSize,
+			data.maxWaitedAmount + (kDownloadPartSize * 2),
 			kMaxWaitedInSession);
 		DEBUG_LOG(("Download (%1,%2) increased max waited amount %3."
 			).arg(dcId
