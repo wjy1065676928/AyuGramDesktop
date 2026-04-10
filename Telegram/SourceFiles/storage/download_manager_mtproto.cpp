@@ -262,7 +262,7 @@ void DownloadManagerMtproto::requestSucceeded(
 	if (amountAtRequestStart == data.maxWaitedAmount
 		&& data.maxWaitedAmount < kMaxWaitedInSession) {
 		data.maxWaitedAmount = std::min(
-			data.maxWaitedAmount + (kDownloadPartSize * 2),
+			data.maxWaitedAmount + (kDownloadPartSize * 3),
 			kMaxWaitedInSession);
 		DEBUG_LOG(("Download (%1,%2) increased max waited amount %3."
 			).arg(dcId
